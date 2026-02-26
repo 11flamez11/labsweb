@@ -10,8 +10,10 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
+import org.springframework.context.annotation.Profile;
 
 @Repository
+@Profile("inmemory")
 public class TaskInMemoryRepository implements TaskRepository {
 
     private final Map<Long, Task> storage = new ConcurrentHashMap<>();
