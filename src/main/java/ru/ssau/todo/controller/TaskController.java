@@ -1,7 +1,9 @@
 package ru.ssau.todo.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ssau.todo.entity.Task;
+import ru.ssau.todo.exception.ClosedTaskException;
 import ru.ssau.todo.repository.TaskRepository;
 import ru.ssau.todo.exception.TaskNotFoundException;
 
@@ -14,7 +16,6 @@ public class TaskController {
 
     private final TaskRepository taskRepository;
 
-    // Конструктор для внедрения зависимости
     public TaskController(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
@@ -39,10 +40,18 @@ public class TaskController {
     }
 
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task task) throws Exception {
+    public ResponseEntity<?> updateTask(@PathVariable Long id, @RequestBody Task task) throws Exception {
         task.setId(id);
-        taskRepository.update(task);
-        return task;
+        try {
+            taskRepository.update(task);
+            return ResponseEntity.ok().build();
+        }
+        catch (TaskNotFoundException e){
+            return ResponseEntity.notFound().build();
+        }
+        catch (ClosedTaskException e){
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
