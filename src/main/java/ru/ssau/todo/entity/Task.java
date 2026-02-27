@@ -12,12 +12,8 @@ public class Task {
     private TaskStatus status;
     private Long createdBy;
     private LocalDateTime createdAt;
-
-    // Пустой конструктор
     public Task() {
     }
-
-    // Конструктор с параметрами для удобства
     public Task(String title, TaskStatus status, Long createdBy) {
         this.title = title;
         this.status = status;

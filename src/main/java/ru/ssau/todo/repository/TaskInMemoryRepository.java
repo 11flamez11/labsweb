@@ -66,7 +66,6 @@ public class TaskInMemoryRepository implements TaskRepository {
             throw new TaskNotFoundException(taskId);
         }
 
-        // Сохраняем оригинальную дату создания
         Task existingTask = storage.get(taskId);
         task.setCreatedAt(existingTask.getCreatedAt());
 
