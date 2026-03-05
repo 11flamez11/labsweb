@@ -41,7 +41,7 @@ public class TaskService {
         return repository.findAll(from, to, userId);
     }
 
-    public void update(Task task) throws Exception {
+    public void update(Task task) {
         repository.update(task);
     }
 

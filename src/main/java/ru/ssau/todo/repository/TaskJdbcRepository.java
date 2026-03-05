@@ -45,7 +45,7 @@ public class TaskJdbcRepository implements TaskRepository {
                 task.getTitle(),
                 task.getStatus().name(),
                 task.getCreatedBy(),
-                task.getCreatedAt() != null ? task.getCreatedAt() : LocalDateTime.now()
+                task.getCreatedAt()
         );
 
         task.setId(id);
@@ -78,7 +78,7 @@ public class TaskJdbcRepository implements TaskRepository {
     }
 
     @Override
-    public void update(Task task) throws Exception {
+    public void update(Task task) {
         String sql = """
                 UPDATE task
                 SET title = ?, status = ?

@@ -1,10 +1,12 @@
 package ru.ssau.todo.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.service.TaskService;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,33 +17,43 @@ public class TaskController {
 
     private final TaskService taskService;
 
+    // CREATE
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.create(task);
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        Task created = taskService.create(task);
+        return ResponseEntity
+                .created(URI.create("/tasks/" + created.getId()))
+                .body(created);
     }
 
+    // GET BY ID
     @GetMapping("/{id}")
-    public Task getTaskById(@PathVariable Long id) {
-        return taskService.getById(id);
+    public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
+        return ResponseEntity.ok(taskService.getById(id));
     }
 
+    // SEARCH
     @GetMapping("/search")
-    public List<Task> searchTasks(
+    public ResponseEntity<List<Task>> searchTasks(
             @RequestParam(required = false) LocalDateTime from,
             @RequestParam(required = false) LocalDateTime to,
             @RequestParam long userId) {
-        return taskService.findAll(from, to, userId);
+
+        return ResponseEntity.ok(taskService.findAll(from, to, userId));
     }
 
+    // UPDATE
     @PutMapping("/{id}")
-    public Task updateTask(@PathVariable Long id, @RequestBody Task task) throws Exception {
+    public ResponseEntity<Task> updateTask( @PathVariable Long id, @RequestBody Task task) {
         task.setId(id);
         taskService.update(task);
-        return task;
+        return ResponseEntity.ok(task);
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
-    public void deleteTask(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
