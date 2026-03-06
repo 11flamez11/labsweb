@@ -3,7 +3,6 @@ package ru.ssau.todo.repository;
 import org.springframework.stereotype.Repository;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.entity.TaskStatus;
-import ru.ssau.todo.exception.ClosedTaskException;
 import ru.ssau.todo.exception.TaskNotFoundException;
 
 import java.time.LocalDateTime;
@@ -63,10 +62,6 @@ public class TaskInMemoryRepository implements TaskRepository {
             throw new TaskNotFoundException(taskId);
         }
         Task existingTask = storage.get(taskId);
-        if (existingTask.getStatus().equals(TaskStatus.CLOSED)){
-            throw new ClosedTaskException(taskId);
-
-        }
         task.setCreatedAt(existingTask.getCreatedAt());
         storage.put(taskId, task);
     }

@@ -16,10 +16,4 @@ public class Task {
     public Task() {
     }
 
-    public Task(String title, TaskStatus status, Long createdBy) {
-        this.title = title;
-        this.status = status;
-        this.createdBy = createdBy;
-        this.createdAt = LocalDateTime.now();
-    }
 }

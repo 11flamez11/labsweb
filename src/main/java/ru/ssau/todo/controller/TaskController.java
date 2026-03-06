@@ -3,10 +3,10 @@ package ru.ssau.todo.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ssau.todo.entity.Task;
-import ru.ssau.todo.exception.ClosedTaskException;
 import ru.ssau.todo.repository.TaskRepository;
 import ru.ssau.todo.exception.TaskNotFoundException;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -21,8 +21,10 @@ public class TaskController {
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskRepository.create(task);
+    public ResponseEntity<Task> createTask(@RequestBody Task task) {
+        Task createdTask = taskRepository.create(task);
+        URI location = URI.create("/tasks/" + createdTask.getId());
+        return ResponseEntity.created(location).body(createdTask);
     }
 
     @GetMapping("/{id}")
@@ -48,9 +50,6 @@ public class TaskController {
         }
         catch (TaskNotFoundException e){
             return ResponseEntity.notFound().build();
-        }
-        catch (ClosedTaskException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
