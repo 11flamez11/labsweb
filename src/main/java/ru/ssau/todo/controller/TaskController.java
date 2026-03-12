@@ -17,7 +17,6 @@ public class TaskController {
 
     private final TaskService taskService;
 
-    // CREATE
     @PostMapping
     public ResponseEntity<Task> createTask(@RequestBody Task task) {
         Task created = taskService.create(task);
@@ -26,13 +25,11 @@ public class TaskController {
                 .body(created);
     }
 
-    // GET BY ID
     @GetMapping("/{id}")
     public ResponseEntity<Task> getTaskById(@PathVariable Long id) {
         return ResponseEntity.ok(taskService.getById(id));
     }
 
-    // SEARCH
     @GetMapping("/search")
     public ResponseEntity<List<Task>> searchTasks(
             @RequestParam(required = false) LocalDateTime from,
@@ -42,7 +39,6 @@ public class TaskController {
         return ResponseEntity.ok(taskService.findAll(from, to, userId));
     }
 
-    // UPDATE
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask( @PathVariable Long id, @RequestBody Task task) {
         task.setId(id);
@@ -50,7 +46,6 @@ public class TaskController {
         return ResponseEntity.ok(task);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id) {
         taskService.delete(id);

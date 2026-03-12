@@ -42,6 +42,31 @@ public class TaskService {
     }
 
     public void update(Task task) {
+        Task existingTask = repository.findById(task.getId())
+                .orElseThrow(() -> new TaskNotFoundException(task.getId()));
+
+        if (!existingTask.getCreatedBy().equals(task.getCreatedBy())) {
+            throw new IllegalStateException("Cannot change task owner");
+        }
+
+        boolean newStatusActive =
+                task.getStatus() == TaskStatus.OPEN ||
+                        task.getStatus() == TaskStatus.IN_PROGRESS;
+
+        boolean oldStatusActive =
+                existingTask.getStatus() == TaskStatus.OPEN ||
+                        existingTask.getStatus() == TaskStatus.IN_PROGRESS;
+
+        if (newStatusActive && !oldStatusActive) {
+
+            long activeCount = repository.countActiveTasksByUserId(task.getCreatedBy());
+
+            if (activeCount >= 10) {
+                throw new IllegalStateException(
+                        "User cant have more than 10 active tasks"
+                );
+            }
+        }
         repository.update(task);
     }
 

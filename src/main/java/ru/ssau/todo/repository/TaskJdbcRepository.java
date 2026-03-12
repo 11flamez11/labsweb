@@ -33,11 +33,7 @@ public class TaskJdbcRepository implements TaskRepository {
 
     @Override
     public Task create(Task task) {
-        String sql = """
-                INSERT INTO task(title, status, created_by, created_at)
-                VALUES (?, ?, ?, ?)
-                RETURNING id
-                """;
+        String sql = " INSERT INTO task(title, status, created_by, created_at) VALUES (?, ?, ?, ?) RETURNING id ";
 
         Long id = jdbcTemplate.queryForObject(
                 sql,
@@ -61,12 +57,7 @@ public class TaskJdbcRepository implements TaskRepository {
 
     @Override
     public List<Task> findAll(LocalDateTime from, LocalDateTime to, long userId) {
-        String sql = """
-                SELECT * FROM task
-                WHERE created_by = ?
-                AND (? IS NULL OR created_at >= ?)
-                AND (? IS NULL OR created_at <= ?)
-                """;
+        String sql = " SELECT * FROM task WHERE created_by = ? AND (? IS NULL OR created_at >= ?) AND (? IS NULL OR created_at <= ?) ";
 
         return jdbcTemplate.query(
                 sql,
@@ -79,11 +70,7 @@ public class TaskJdbcRepository implements TaskRepository {
 
     @Override
     public void update(Task task) {
-        String sql = """
-                UPDATE task
-                SET title = ?, status = ?
-                WHERE id = ?
-                """;
+        String sql = " UPDATE task SET title = ?, status = ? WHERE id = ? ";
 
         int updated = jdbcTemplate.update(
                 sql,
@@ -104,12 +91,7 @@ public class TaskJdbcRepository implements TaskRepository {
 
     @Override
     public long countActiveTasksByUserId(long userId) {
-        String sql = """
-                SELECT COUNT(*) FROM task
-                WHERE created_by = ?
-                AND status IN ('OPEN', 'IN_PROGRESS')
-                """;
-
+        String sql = " SELECT COUNT(*) FROM task WHERE created_by = ? AND status IN ('OPEN', 'IN_PROGRESS')";
         return jdbcTemplate.queryForObject(sql, Long.class, userId);
     }
 }
