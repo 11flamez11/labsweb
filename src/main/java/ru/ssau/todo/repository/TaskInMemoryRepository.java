@@ -1,5 +1,6 @@
 package ru.ssau.todo.repository;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 import ru.ssau.todo.entity.Task;
 import ru.ssau.todo.entity.TaskStatus;
@@ -7,15 +8,14 @@ import ru.ssau.todo.exception.TaskNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @Repository
+@Profile("inmemory")
 public class TaskInMemoryRepository implements TaskRepository {
 
-    private final Map<Long, Task> storage = new ConcurrentHashMap<>();
-    private final AtomicLong idGenerator = new AtomicLong(1);
+    private final Map<Long, Task> storage = new HashMap<>();
+    private long idGenerator = 1;
 
     @Override
     public Task create(Task task) {
@@ -23,14 +23,14 @@ public class TaskInMemoryRepository implements TaskRepository {
             throw new IllegalArgumentException("Task cannot be null");
         }
 
-        long newId = idGenerator.getAndIncrement();
-
+        long newId = idGenerator++;
         Task taskToSave = new Task();
         taskToSave.setId(newId);
         taskToSave.setTitle(task.getTitle());
         taskToSave.setStatus(task.getStatus());
         taskToSave.setCreatedBy(task.getCreatedBy());
-        taskToSave.setCreatedAt(task.getCreatedAt() != null ? task.getCreatedAt() : LocalDateTime.now());
+        taskToSave.setCreatedAt(LocalDateTime.now()
+        );
 
         storage.put(newId, taskToSave);
         return taskToSave;
@@ -56,18 +56,15 @@ public class TaskInMemoryRepository implements TaskRepository {
     @Override
     public void update(Task task) {
         if (task == null) {
-            throw new IllegalArgumentException("Task cannot be null");
+            throw new IllegalArgumentException("Task cant be null");
         }
 
         Long taskId = task.getId();
         if (taskId == null || !storage.containsKey(taskId)) {
             throw new TaskNotFoundException(taskId);
         }
-
-        // Сохраняем оригинальную дату создания
         Task existingTask = storage.get(taskId);
         task.setCreatedAt(existingTask.getCreatedAt());
-
         storage.put(taskId, task);
     }
 
